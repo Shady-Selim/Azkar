@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "277876841134",
+    "firebase_url": "https://azkar-day-night.firebaseio.com",
+    "project_id": "azkar-day-night",
+    "storage_bucket": "azkar-day-night.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:277876841134:android:a17ffdaf3ac0b549",
+        "android_client_info": {
+          "package_name": "com.shady_selim.azkar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "277876841134-stsge4uhe5895t5vgmvc6ceebh1gv3l1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.shady_selim.azkar",
+            "certificate_hash": "01206e382fadc80183457783fdfc2283957be33f"
+          }
+        },
+        {
+          "client_id": "277876841134-0iulqjb20oort8blfriu01vlf7gi2qhu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAc-cF_MTaaQ1DgO_3YS6-PRpQkSYTMw0c"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "277876841134-0iulqjb20oort8blfriu01vlf7gi2qhu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

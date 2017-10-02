@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/list_content"
+    android:elevation="@dimen/widget_margin"
+    android:padding="@dimen/widget_margin"
+    android:layout_marginHorizontal="@dimen/widget_margin"
+    android:background="?attr/selectableItemBackground"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/text_margin"
+        android:contentDescription="@string/app_name"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <ImageButton
+        android:id="@+id/favorite_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/fab_margin"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/favorite_image_button"
+        app:srcCompat="@drawable/ic_favorite_border_black_24dp"
+        android:layout_alignParentEnd="true"
+        android:layout_gravity="end|center_vertical" />
+</RelativeLayout>
