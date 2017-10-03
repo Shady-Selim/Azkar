@@ -3,7 +3,7 @@ package com.shady_selim.azkar;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -35,7 +35,6 @@ import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import butterknife.BindBool;
 import butterknife.BindString;
@@ -44,7 +43,6 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
     private Menu menu;
-    private String languageToLoad;
     private List<AzkarClass> azkarList;
     private SharedPreferences preferences;
     private boolean mTwoPane;
@@ -78,12 +76,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        languageToLoad  = "ar";
-        Locale locale = new Locale(languageToLoad);
-        Locale.setDefault(locale);
-        Configuration config = new Configuration();
-        config.locale = locale;
-        getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         setTitle(title);
@@ -99,37 +91,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (savedInstanceState == null){
-            FirebaseDatabase database = FirebaseDatabase.getInstance();
-            database.setPersistenceEnabled(true);
-            DatabaseReference myRef = database.getReference((languageToLoad.equals("ar"))?"arabic":"english");
-            myRef.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    Log.e("test", "Count is: " + dataSnapshot.getChildrenCount());
-                    azkarList = new ArrayList<>();
-                    for(DataSnapshot templateSnapshot : dataSnapshot.getChildren()){
-                        azkarList.add(templateSnapshot.getValue(AzkarClass.class)) ;
-                    }
+            new FirebaseAsyncTask().execute("arabic");
 
-                    List<AzkarListClass> azkaListClassList = new ArrayList<>();
-                    for (int i = 0; i < azkarList.size(); i++){
-                        azkaListClassList.addAll(azkarList.get(i).azkar);
-                    }
-
-
-                    SharedPreferences.Editor editor = preferences.edit();
-                    editor.putString("azkar", new Gson().toJson(azkaListClassList));
-                    editor.apply();
-
-                    setupRecyclerView(mRecyclerView);
-
-                    Log.e("test", "azkaListClassList is: " + azkaListClassList.size());
-                }
-                @Override
-                public void onCancelled(DatabaseError error) {
-                    Log.w("test", "Failed to read value.", error.toException());
-                }
-            });
         }else {
             azkarList = Parcels.unwrap(savedInstanceState.getParcelable("azkarList"));
             isFavorite = savedInstanceState.getBoolean("isFavorite");
@@ -140,8 +103,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupRecyclerView(RecyclerView recyclerView) {
         recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(azkarList));
-        /*RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(this, LinearLayoutManager.VERTICAL);
-        recyclerView.addItemDecoration(itemDecoration);*/
     }
 
     @Override
@@ -192,7 +153,6 @@ public class MainActivity extends AppCompatActivity {
             }
             if (exist == -1 && isFavorite) {
                 holder.mList.setVisibility(View.GONE);
-//                notifyItemRemoved(holder.getAdapterPosition());
             }else{
                 changeButton(exist ,holder.mFavorite, mValues.get(position).name);
                 holder.mItem = mValues.get(position);
@@ -214,9 +174,6 @@ public class MainActivity extends AppCompatActivity {
                                     changeButton(-1,holder.mFavorite, mValues.get(position).name);
                                     if(isFavorite){
                                         holder.mList.setVisibility(View.GONE);
-                                        /*mValues.remove(holder.getLayoutPosition());
-                                        notifyItemRemoved(holder.getLayoutPosition());
-                                        notifyItemRangeChanged(holder.getLayoutPosition(), mValues.size());*/
                                     }
                                 }
                                 SharedPreferences.Editor editor = preferences.edit();
@@ -278,6 +235,49 @@ public class MainActivity extends AppCompatActivity {
                 mView = itemView;
                 ButterKnife.bind(this, itemView);
             }
+        }
+    }
+
+    private class FirebaseAsyncTask extends AsyncTask<String,Void,DatabaseReference> {
+        @Override
+        protected DatabaseReference doInBackground(String... strings) {
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            database.setPersistenceEnabled(true);
+            DatabaseReference myRef = database.getReference(strings[0]);
+            return myRef;
+        }
+
+        @Override
+        protected void onPostExecute(DatabaseReference result) {
+            super.onPostExecute(result);
+            result.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Log.e("test", "Count is: " + dataSnapshot.getChildrenCount());
+                    azkarList = new ArrayList<>();
+                    for(DataSnapshot templateSnapshot : dataSnapshot.getChildren()){
+                        azkarList.add(templateSnapshot.getValue(AzkarClass.class)) ;
+                    }
+
+                    List<AzkarListClass> azkaListClassList = new ArrayList<>();
+                    for (int i = 0; i < azkarList.size(); i++){
+                        azkaListClassList.addAll(azkarList.get(i).azkar);
+                    }
+
+
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putString("azkar", new Gson().toJson(azkaListClassList));
+                    editor.apply();
+
+                    setupRecyclerView(mRecyclerView);
+
+                    Log.e("test", "azkaListClassList is: " + azkaListClassList.size());
+                }
+                @Override
+                public void onCancelled(DatabaseError error) {
+                    Log.w("test", "Failed to read value.", error.toException());
+                }
+            });
         }
     }
 }
